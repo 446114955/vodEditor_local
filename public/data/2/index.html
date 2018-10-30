@@ -1,0 +1,94 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head lang="en">
+        <meta name="page-view-size" content="1280*720">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title></title>
+    </head>
+    <style>
+    body {
+        width: 1280px;
+        height: 720px;
+        margin: 0;
+        overflow: hidden;
+    }
+    .btn-wrapper img {
+        position: absolute;
+        z-index: 10;
+    }
+    </style>
+    <body>
+        <div i="btn-wrapper" class="btn-wrapper"> 
+            <img id="123" src="image\zt.jpg" style="top:0;left:0px;"><img id="1" src="image\video.png" style="top:-18;left:73px;"><img id="555" src="image\t6.png" style="top:30;left:93px;"><img id="444" src="image\t4.png" style="top:33;left:357px;">
+        </div>
+        <iframe id="iframeContainer" name="iframeContainer" src="" style="background-color:transparent" width="0" height="0" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="true"></iframe>
+        
+        <script src="./jquery.min.js"></script>
+        <script>
+            var picData = null;
+            var nowChoose = null;
+            var chooseNum = 0;
+            var chooseId = nowChoose;
+            var btn = [];
+            $.ajax({
+                type:"GET",
+                dataType:"json",
+                url:"data.json",
+                success: function(data){
+                    picData = data.pic;
+                   
+                    for(var i=0;i<picData.length;i++){
+                        if(picData[i].imgAlt=="按钮"){
+                            btn.push(picData[i]);
+                        }
+                    }
+                    nowChoose = nowChoose?nowChoose:btn[0].imgId;0
+                }
+            })    
+            window.addEventListener('keyup', chooseBtn);
+            function chooseBtn(evt){
+                var keyCode = evt.keyCode;
+                if ((keyCode != 38) && (keyCode != 37) && (keyCode != 39) && (keyCode != 40)&& (keyCode != 13)) return;
+                // 上38，左37，右39，下40
+                switch (keyCode) {
+                    case 38:
+                        chooseId = btn[chooseNum].imgTopId;
+                        break;
+                    case 37:
+                        chooseId = btn[chooseNum].imgLeftpId;
+                        break;
+                    case 39:
+                        chooseId = btn[chooseNum].imgRightId;
+                        break;
+                    case 40:
+                        chooseId = btn[chooseNum].imgBottomId;
+                        break;
+                    case 13:
+                        
+                        break;
+                }
+                for(var j=0;j<btn.length;j++){
+                    var pic = document.getElementById(btn[j].imgId);
+                    var nerSrc = clearSrc(btn[j].imgSrc);
+                    pic.src = nerSrc;
+                    if(chooseId==btn[j].imgId){
+                        nowChoose = chooseId;
+                        chooseNum = j;
+                        pic.src = clearSrc(btn[j].imgLSrc);
+                    }
+                }
+                
+            }
+            function clearSrc(item){
+                // var imgSrc = item.replace("/\/g","/");
+                var imgSrc = item
+                imgSrc = imgSrc.split('image');
+                imgSrc = "./image" + imgSrc[1];
+                return imgSrc;
+            }
+        </script>
+    
+    </body>
+    </html>
+    

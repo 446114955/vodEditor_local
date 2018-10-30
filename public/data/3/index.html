@@ -1,0 +1,324 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head lang="en">
+        <meta name="page-view-size" content="1280*720">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>九州乐学-英语学习启蒙</title>
+    </head>
+    <style>
+    body {
+        width: 1280px;
+        height: 720px;
+        margin: 0;
+        overflow: hidden;
+    }
+    .btn-wrapper img {
+        position: absolute;
+        z-index: 10;
+    }
+    #console {
+        position: absolute;
+        z-index: 1000;
+        top: 70px;
+        left: 30px;
+        width: 600px;
+        height: 600px;
+        background-color: rgba(0,0,0,0.7);
+        color: #fff;
+        word-wrap:break-word;
+        overflow-y: scroll;
+        display:none;
+    }
+
+    #console pre{
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    </style>
+    <body>
+        <div i="btn-wrapper" class="btn-wrapper"> 
+            <img id="0" src="image\ztbj.png" style="top:0px;left:0px;"><img id="101" src="image\video-img.png" style="top:190px;left:181px;"><img id="1" src="image\t6.png" style="top:483px;left:149px;"><img id="2" src="image\t7.png" style="top:487px;left:316px;"><img id="3" src="image\t8.png" style="top:500px;left:475px;"><img id="4" src="image\t9.png" style="top:521px;left:631px;"><img id="5" src="image\t10.png" style="top:536px;left:793px;"><img id="6" src="image\t11.png" style="top:524px;left:951px;"><img id="back" src="image\back.png" style="top:5px;left:1175px;"><img id="11" src="image\t1.png" style="top:321px;left:670px;"><img id="22" src="image\t2.png" style="top:364px;left:766px;"><img id="33" src="image\t3.png" style="top:390px;left:893px;"><img id="44" src="image\t4.png" style="top:353px;left:1022px;"><img id="55" src="image\t5.png" style="top:283px;left:1122px;"><img id="7" src="image\more.png" style="top:509px;left:1123px;"><img id="15" src="image\log1.png" style="top:37px;left:16px;"><img id="16" src="image\log.png" style="top:2px;left:196px;">
+        </div>
+        <iframe id="iframeContainer" name="iframeContainer" src="" style="background-color:transparent" width="0" height="0" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="true"></iframe>
+        <div id="console" class="none"></div>
+    </body>
+    
+        
+        <script src="../js/public/jquery.min.js"></script>
+        <script src="../js/public/tripledes.js"></script>
+        <script src="../js/public/mode-ecb.js"></script>
+        <script src="../js/public/common.js"></script>
+        <script src="../js/adaptor/config.js"></script>
+        <script src="../js/adaptor/print.js"></script>
+        <script src="../js/adaptor/jsdx.js"></script>
+        
+        <script src="../js/service/serverRequest.js"></script>
+        <script src="../js/service/behaviorReport.js"></script>
+        <script src="../js/js_page/video-page-jsdx.js"></script>
+        <script>
+        try{
+            var iframContainer=document.getElementById('iframeContainer');
+            var log = lexue.printer.info;
+            var picData = null,
+                nowChoose = null,
+                chooseNum = 0,
+                chooseId = nowChoose,
+                contentIdArr = [],
+                btn = [],
+                vIndex = 17,                    // 当前版本
+                htmlName = location.origin+location.pathname, 
+                speName = '123';
+            //通知后台订购消息
+            var result = QueryStr('result');
+            $.ajax({
+                type:"GET",
+                dataType:"json",
+                url:"data.json",
+                success: function(data){
+                    picData = data.pic;
+                    vIndex = data.id+'zt';
+                    for(var i=0;i<picData.length;i++){
+                        if(picData[i].imgAlt=="按钮"){
+                            btn.push(picData[i]);
+                        }
+                    }
+                    for(var j=0;j<btn.length;j++){
+                        if(btn[j].btnVideo){
+                            contentIdArr.push(btn[j].btnVideo);
+                        }
+                    }
+                    //nowChoose = nowChoose?nowChoose:btn[0].imgId;
+                    
+                    initFun();
+                }
+            })    
+            function initFun(){
+
+
+
+                setCookie('vfromPage', 'subject');
+                setCookie('fromArea',QueryStr('code'));
+                setCookie('modeCount',vIndex);
+                setCookie("isOutApp",'true');
+                var code = QueryStr('code') || 0;//  推荐位位置
+                lexue.behavior.reportPageAction(vIndex,'专题-'+speName,code);
+                
+                
+                if(QueryStr('index') != null) {
+                    nowChoose = parseInt(QueryStr('index'));
+                    var lock = true;
+                    for(var j=0;j<btn.length;j++){
+                        var pic = document.getElementById(btn[j].imgId);
+                        var nerSrc = clearSrc(btn[j].imgSrc);
+                        pic.src = nerSrc;
+                        if(nowChoose==btn[j].imgId){
+                            chooseNum = j;
+                            pic.src = clearSrc(btn[j].imgLSrc);
+                            lock = false;
+                        }
+                        if((j==btn.length-1)&&lock){
+                            pic = document.getElementById(btn[chooseNum].imgId);
+                            pic.src = clearSrc(btn[chooseNum].imgLSrc);
+                        }
+                        
+                        
+                    }
+                }
+                
+                
+                // 判断是否订购
+                lexue.jsdx.getOrderRelation(function(isOrdered){
+                    if(isOrdered === true){
+                        lexue.sysinfo.orderCode = 0;
+                    }else{
+                        lexue.sysinfo.orderCode = 1;
+                    }
+                });
+
+                
+                if (result === '0' ){
+                    var params = {
+                        result: result,
+                        userId: lexue.sysinfo.userId,
+                        from: 'subject'
+                    };
+                    lexue.behavior.reportContentAction('1','testName','debug',getCookie('notifyUrl')+'?userId='+params.userId+'&from='+params.from+'&result='+params.result+'&transId='+getCookie('transId'));//打印到后台
+                    $.ajax({
+                        type: 'GET',
+                        url: getCookie('notifyUrl')+'?userId='+getCookie('userId')+'&orderBy1=Special&orderBy2=Main&orderm='+getCookie('modercmd')+'&result='+result+'&transId='+getCookie('transId'),
+                        async:true     //采用异步请求
+                    });
+                }else if(result){
+                    var params = {
+                        result: result,
+                        userId: lexue.sysinfo.userId,
+                        from: 'subject'
+                    };
+                    lexue.behavior.reportContentAction('1','testName','debug',getCookie('notifyUrl')+'?userId='+params.userId+'&from='+params.from+'&result='+params.result+'&transId='+getCookie('transId'));//打印到后台
+                    $.ajax({
+                        type: 'GET',
+                        url: getCookie('notifyUrl')+'?userId='+getCookie('userId')+'&orderBy1=Special&orderBy2=Main&orderm='+getCookie('modercmd')+'&result='+result+'&transId='+getCookie('transId'),
+                        async:true     //采用异步请求
+                    });
+                }
+
+                //小窗播放
+                if(typeof Utility !== 'undefined' && typeof Utility.getEvent !== 'undefined') {
+                    var playParams = {};
+                    var btnDom = document.getElementById(btn[0].imgId);
+                    playParams.contentId = contentIdArr[0];
+                    playParams.playMode = "small";
+                    playParams.playArea = {};
+                    playParams.playArea.top = btnDom.style.top;
+                    playParams.playArea.left = btnDom.style.left;
+                    playParams.playArea.width = btnDom.width;
+                    playParams.playArea.height = btnDom.height;
+
+                    playUrl = window.lexue.jsdx.createPlayUrl(playParams);
+                    log("小窗播放地址：" + playUrl);
+                    iframContainer.src = playUrl;
+                }else {
+                    $('.video-img').removeClass('none');
+                }
+
+                if(navigator.platform === 'Win32') {
+                    document.onkeydown = keyDown;
+                }else {
+                    document.onkeypress = keyDown;
+                }
+            };
+
+            //监听视频播放事件
+            function dealEvent(keyEvent){
+                var keyEvent_ = keyEvent?keyEvent:window.event;
+                var keyvalue = keyEvent_.which?keyEvent_.which:keyEvent_.keyCode;
+                if (typeof(Utility) !== "object" || !"getEvent" in Utility){
+                    iframContainer.src = '';
+                    //如果监听的数据解析失败则用图片替换视频
+                    $('.video-img').removeClass('none');
+                    return;
+                }
+                if(keyvalue == 0x0300) {
+                    // log('*******'+Utility.getEvent()+'***'+keyvalue);
+                    var event = Utility.getEvent();
+                    var typeStr = event.type;
+                    if (typeof(typeStr) === "undefined" || typeStr == "")
+                    {
+                        var tArray = new Array();
+                        tArray = event.split(",");
+                        var temp = tArray[0];
+                        var index = temp.indexOf(":")+2;
+                        typeStr = temp.substring(index,temp.length -1);
+                    }
+                    if(typeStr) {
+                        if(typeStr === 'EVENT_MEDIA_END' || typeStr === 'EVENT_MEDIA_ERROR'){
+                            iframContainer.src = playUrl;
+                        }
+                    }else {
+                        iframContainer.src = '';
+                        //如果监听的数据解析失败则用图片替换视频
+                        $('.video-img').removeClass('none');
+                    }
+                    log('事件响应：'+Utility.getEvent());
+                }
+            }
+            
+           
+            function keyDown(evt){
+                dealEvent(evt);
+                var keyCode = evt.keyCode;
+                if ((keyCode != 38) && (keyCode != 37) && (keyCode != 39) && (keyCode != 40)&& (keyCode != 13)) return;
+                // 上38，左37，右39，下40
+                switch (keyCode) {
+                    case 38:
+                        chooseId = btn[chooseNum].imgTopId;
+                        break;
+                    case 37:
+                        chooseId = btn[chooseNum].imgLeftpId;
+                        break;
+                    case 39:
+                        chooseId = btn[chooseNum].imgRightId;
+                        break;
+                    case 40:
+                        chooseId = btn[chooseNum].imgBottomId;
+                        break;
+                    case 13:
+                        enterController(chooseNum);
+                        break;
+                }
+                var lock = true;
+                for(var j=0;j<btn.length;j++){
+                    var pic = document.getElementById(btn[j].imgId);
+                    var nerSrc = clearSrc(btn[j].imgSrc);
+                    pic.src = nerSrc;
+                    if(chooseId==btn[j].imgId){
+                        nowChoose = chooseId;
+                        chooseNum = j;
+                        pic.src = clearSrc(btn[j].imgLSrc);
+                        lock = false;
+                    }
+                    if((j==btn.length-1)&&lock){
+                        pic = document.getElementById(btn[chooseNum].imgId);
+                        pic.src = clearSrc(btn[chooseNum].imgLSrc);
+                    }
+                    
+                    
+                }
+                
+            }
+            function clearSrc(item){
+                // var imgSrc = item.replace("/\/g","/");
+                var imgSrc = item
+                imgSrc = imgSrc.split('image');
+                imgSrc = "./image" + imgSrc[1];
+                return imgSrc;
+            }
+
+
+            function enterController (index) {
+                if(btn[index].imgStage=='返回'){
+                    location.href = '../index.html';
+                }
+                else if(btn[index].imgStage=='更多精彩'){
+                    if(!btn[index].btnMore){
+                        return;
+                    }
+                    location.href = 'http://'+lexue.sysinfo.lexueServiceIp+':'+lexue.sysinfo.lexueServicePort+'?index='+ index +'&sname='+ htmlName +'&subject='+btn[index].btnMore+'#secondPage';//返回到专题所在的栏目 indexsyj indexej size boxindex
+                }
+                else if(btn[index].imgStage=='视频按钮'){
+                    //  已订购用户或者免费视频框
+                    if(lexue.sysinfo.orderCode === 0 || result === '0' || index === 1) {
+                        var playParams = {};
+                        playParams.contentId = btn[index].btnVideo;
+                        playParams.playMode = "full";
+                        playParams.backVasUrl = htmlName+'?index='+nowChoose;//返回到专题
+                        playUrl = window.lexue.jsdx.createPlayUrl(playParams);
+                        location.href = playUrl;
+                    }else {
+                        //未订购，用内容鉴权,重定向到订购页
+                        var createTransactionID = lexue.jsdx.createTransactionID('Special');
+                        var returnUrl = htmlName+'?index='+nowChoose;
+                        var purchaseParam = {
+                            transCationId: createTransactionID,
+                            returnUrl: returnUrl,
+                            fromPage: 'zhuanti',
+                            contentId: btn[index].btnVideo,
+                        };
+                        lexue.jsdx.purchaseProduct(purchaseParam);
+                    }
+                }
+            }
+        }catch(err){
+            var domLog = $('#console')
+            domLog.html("<div>"+err+"</div>");
+        }
+        function logIn(text) {
+            var domLog = $('#console')
+            var divLog = "<div>" + text + "</div>"
+            domLog.append(divLog);
+        }
+        </script>
+    
+    </html>
+    

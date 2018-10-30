@@ -1,0 +1,34 @@
+{
+    "special":{
+        "speId":"专题ID",
+        "speName":"专题名称",
+        "speNumber":"专题编码",
+        "speSrc":"专题路径",
+        "spePic":"专题封面",
+        "speState":"专题的运行商"
+    },
+    "image":[{
+        "imgId":"图片ID",
+        "imgName":"图片名称",
+        "imgAlt":"图片属性:0图片，1按钮",
+        "imgIndex":"图片层级",
+        "imgX":"图片左偏移量",
+        "imgY":"图片上偏移量",
+        "imgAlphe":"图片透明度",
+        "imgMiddle":"图片居中:0左对齐，1居中，2垂直居中，3右对齐",
+        "imgSrc":"图片地址",
+        "imgLSrc":"选中图片地址 需要图片属性为按钮否则为null",
+        "btnDate":{
+            "topBtn":"向上按钮ID",
+            "leftBtn":"向左按钮ID",
+            "rightBtn":"向右按钮ID",
+            "bottomBtn":"向下按钮ID",
+            "btnState":"按钮类型:0视频按钮，1更多经常按钮，2返回按钮",
+            "btnVideo":"确定按钮的视频码值",
+            "btnMore":"更多精彩列表依赖"
+        }
+    }]
+}
+
+
+
